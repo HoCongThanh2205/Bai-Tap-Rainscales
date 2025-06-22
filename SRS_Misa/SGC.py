@@ -39,7 +39,6 @@ def write_log(message):
 def setup_driver():
     if not os.path.exists(DOWNLOAD_DIR):
         os.makedirs(DOWNLOAD_DIR)
-
     options = Options()
     options.add_experimental_option("prefs", {
         "download.default_directory": DOWNLOAD_DIR,
@@ -84,14 +83,14 @@ def tra_cuu_hoa_don(driver, ma_tra_cuu):
             wait.until(EC.presence_of_element_located((By.ID, "showPopupInvoice")))
             write_log(f"Mã '{ma_tra_cuu}': Tìm thấy hóa đơn.")
 
-            # Bước 1: Click nút "Tải hóa đơn" (span)
+            # Click nút "Tải hóa đơn" (span)
             try:
                 btn_open_download = wait.until(
                     EC.element_to_be_clickable((By.CLASS_NAME, "download-invoice"))
                 )
                 driver.execute_script("arguments[0].click();", btn_open_download)
 
-                # Bước 2: Chờ menu hiện ra rồi click "Tải PDF"
+                # Chờ menu hiện ra rồi click "Tải PDF"
                 wait.until(EC.visibility_of_element_located((By.CLASS_NAME, "txt-download-pdf")))
                 pdf_btn = driver.find_element(By.CLASS_NAME, "txt-download-pdf")
                 pdf_btn.click()
