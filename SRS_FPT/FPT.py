@@ -77,12 +77,13 @@ def tra_cuu_va_tai_xml(driver, wait, mst, mtc, url, download_dir):
 # Đọc dữ liệu từ XML
 def read_xml_info(xml_path):
     try:
+        # Phân tích file xml
         tree = ET.parse(xml_path)
         root = tree.getroot()
 
         # Tìm node chính
-        hdon_node = root.find(".//HDon")
-        invoice_node = hdon_node.find("DLHDon") if hdon_node is not None else None
+        hoa_don_node = root.find(".//HDon")
+        invoice_node = hoa_don_node.find("DLHDon") if hoa_don_node is not None else None
         if invoice_node is None:
             for tag in [".//DLHDon", ".//TDiep", ".//Invoice"]:
                 node = root.find(tag)
@@ -102,11 +103,11 @@ def read_xml_info(xml_path):
             return current.text if current is not None else None
 
         # Tìm số tài khoản bán
-        stk_ban = find("NDHDon/NBan/STKNHang")
-        if not stk_ban:
+        stk_ban_hang = find("NDHDon/NBan/STKNHang")
+        if not stk_ban_hang:
             for thongtin in invoice_node.findall(".//NBan/TTKhac/TTin"):
                 if thongtin.findtext("TTruong") == "SellerBankAccount":
-                    stk_ban = thongtin.findtext("DLieu")
+                    stk_ban_hang = thongtin.findtext("DLieu")
                     break
 
         return {
@@ -114,7 +115,7 @@ def read_xml_info(xml_path):
             'Đơn vị bán hàng': find("NDHDon/NBan/Ten"),
             'Mã số thuế bán': find("NDHDon/NBan/MST"),
             'Địa chỉ bán': find("NDHDon/NBan/DChi"),
-            'Số tài khoản bán': stk_ban,
+            'Số tài khoản bán': stk_ban_hang,
             'Họ tên người mua hàng': find("NDHDon/NMua/Ten"),
             'Địa chỉ mua': find("NDHDon/NMua/DChi"),
             'Mã số thuế mua': find("NDHDon/NMua/MST"),
@@ -130,8 +131,10 @@ def write_excel(filepath, data):
         ws = wb.active
         ws.append([
             "STT", "MST", "Mã tra cứu", "URL",
-            "Số hóa đơn", "Đơn vị bán hàng", "Mã số thuế bán", "Địa chỉ bán", "Số tài khoản bán",
-            "Họ tên người mua hàng", "Địa chỉ mua", "Mã số thuế mua", "Ghi chú"
+            "Số hóa đơn", "Đơn vị bán hàng",
+            "Mã số thuế bán", "Địa chỉ bán",
+            "Số tài khoản bán", "Họ tên người mua hàng",
+            "Địa chỉ mua", "Mã số thuế mua", "Ghi chú"
         ])
     else:
         wb = load_workbook(filepath)
